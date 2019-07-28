@@ -4,7 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
-class Joystick {
+public class Joystick {
 
     private int outerCircleCenterPositionX;
     private int outerCircleCenterPositionY;
