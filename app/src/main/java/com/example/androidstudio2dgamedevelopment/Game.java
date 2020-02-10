@@ -10,7 +10,6 @@ import android.view.SurfaceView;
 
 import com.example.androidstudio2dgamedevelopment.object.Circle;
 import com.example.androidstudio2dgamedevelopment.object.Enemy;
-import com.example.androidstudio2dgamedevelopment.object.GameObject;
 import com.example.androidstudio2dgamedevelopment.object.Player;
 import com.example.androidstudio2dgamedevelopment.object.Spell;
 
@@ -141,6 +140,7 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
         // Update game state
         joystick.update();
         player.update();
+
         if(Enemy.readyToSpawn()) {
             enemyList.add(new Enemy(getContext(), player));
         }
@@ -167,6 +167,7 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
             if (Circle.isColliding(enemy, player)) {
                 // Remove enemy if it collides with the player
                 iteratorEnemy.remove();
+                player.setHealthPoint(player.getHealthPoint() - 1);
                 continue;
             }
 
