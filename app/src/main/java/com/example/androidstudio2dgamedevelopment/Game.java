@@ -2,6 +2,7 @@ package com.example.androidstudio2dgamedevelopment;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -96,15 +97,18 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
+        Log.d("Game.java", "surfaceCreated()");
         gameLoop.startLoop();
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        Log.d("Game.java", "surfaceChanged()");
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
+        Log.d("Game.java", "surfaceDestroyed()");
     }
 
     @Override
@@ -184,5 +188,9 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
                 }
             }
         }
+    }
+
+    public void pause() {
+        gameLoop.stopLoop();
     }
 }
