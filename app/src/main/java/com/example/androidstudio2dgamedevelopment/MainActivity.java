@@ -37,7 +37,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onPause() {
         Log.d("MainActivity.java", "onPause()");
-        //game.pause();
+        game.pause();
         super.onPause();
     }
 
