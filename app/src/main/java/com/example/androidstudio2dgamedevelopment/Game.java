@@ -24,9 +24,10 @@ import java.util.List;
  * objects to the screen
  */
 class Game extends SurfaceView implements SurfaceHolder.Callback {
-
-    private int joystickPointerId = 0;
-    private final Joystick joystick;
+    private int movementJoystickPointerId = -1;
+    private int directionJoystickPointerId = -1;
+    private final Joystick movementJoystick;
+    private final Joystick directionJoystick;
     private final Player player;
     private GameLoop gameLoop;
     private List<Enemy> enemyList = new ArrayList<Enemy>();
@@ -47,11 +48,11 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
         // Initialize game panels
         performance = new Performance(context, gameLoop);
         gameOver = new GameOver(context);
-        joystick = new Joystick(275, 700, 70, 40);
+        movementJoystick = new Joystick(275, 700, 70, 40);
+        directionJoystick = new Joystick(1920 - 275, 700, 70, 40);
 
         // Initialize game objects
-        player = new Player(context, joystick, 2*500, 500, 30);
-
+        player = new Player(context, movementJoystick, 2*500, 500, 30);
 
         setFocusable(true);
     }
@@ -60,48 +61,71 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
     public boolean onTouchEvent(MotionEvent event) {
 
         // Handle user input touch event actions
-        switch (event.getActionMasked()) {
+        int action = event.getAction();
+        int actionCode = action & MotionEvent.ACTION_MASK;
+        int pointerIdIndex = (action & MotionEvent.ACTION_POINTER_INDEX_MASK) >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+        int pointerId = event.getPointerId(pointerIdIndex);
+        float x = event.getX(pointerIdIndex);
+        float y = event.getY(pointerIdIndex);
+        int pointerCount = event.getPointerCount();
+
+        Log.d("Game::onTouchEvent","onTouchEvent: action=" + action + ", pointerIdIndex=" +
+                pointerIdIndex + ", pointerId="+ pointerId + ", x=" + x + ", y=" + y);
+        switch (actionCode) {
             case MotionEvent.ACTION_DOWN:
             case MotionEvent.ACTION_POINTER_DOWN:
-                if (joystick.getIsPressed()) {
-                    // Joystick was pressed before this event -> cast spell
-                    numberOfSpellsToCast ++;
-                } else if (joystick.isPressed((double) event.getX(), (double) event.getY())) {
-                    // Joystick is pressed in this event -> setIsPressed(true) and store pointer id
-                    joystickPointerId = event.getPointerId(event.getActionIndex());
-                    joystick.setIsPressed(true);
+            //case MotionEvent.ACTION_MOVE:
+                if (movementJoystick.isPressed(x, y)) {
+                    /* movementJoystick is pressed in this event ->
+                           store pointer id and setIsPressed(true) */
+                    movementJoystickPointerId = pointerId;
+                    movementJoystick.setIsPressed(true);
+                } else if (directionJoystick.isPressed(x, y)) {
+                    /* directionJoystick is pressed in this event ->
+                           store pointer id and setIsPressed(true) */
+                    directionJoystickPointerId = pointerId;
+                    directionJoystick.setIsPressed(true);
                 } else {
-                    // Joystick was not previously, and is not pressed in this event -> cast spell
+                    /* No joystick was pressed -> cast spell */
                     numberOfSpellsToCast ++;
                 }
-                return true;
-            case MotionEvent.ACTION_MOVE:
-                if (joystick.getIsPressed()) {
-                    // Joystick was pressed previously and is now moved
-                    joystick.setActuator((double) event.getX(), (double) event.getY());
-                }
-                return true;
-
+                break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_POINTER_UP:
-                if (joystickPointerId == event.getPointerId(event.getActionIndex())) {
+            case MotionEvent.ACTION_CANCEL:
+            case MotionEvent.ACTION_OUTSIDE:
+                if (movementJoystickPointerId == pointerId) {
                     // joystick pointer was let go off -> setIsPressed(false) and resetActuator()
-                    joystick.setIsPressed(false);
-                    joystick.resetActuator();
+                    movementJoystick.setIsPressed(false);
+                    movementJoystick.resetActuator();
+                    movementJoystickPointerId = -1;
+                } else if (directionJoystickPointerId == pointerId) {
+                    // joystick pointer was let go off -> setIsPressed(false) and resetActuator()
+                    directionJoystick.setIsPressed(false);
+                    directionJoystick.resetActuator();
+                    directionJoystickPointerId = -1;
                 }
-                return true;
+                break;
         }
 
-        return super.onTouchEvent(event);
+        for (int iPointerIndex = 0; iPointerIndex < pointerCount; iPointerIndex++) {
+            if (movementJoystick.getIsPressed() && event.getPointerId(iPointerIndex) == movementJoystickPointerId) {
+                // movementJoystick was pressed previously and is now moved
+                movementJoystick.setActuator(event.getX(iPointerIndex), event.getY(iPointerIndex));
+            } else if (directionJoystick.getIsPressed() && event.getPointerId(iPointerIndex) == directionJoystickPointerId) {
+                // directionJoystick was pressed previously and is now moved
+                directionJoystick.setActuator(event.getX(iPointerIndex), event.getY(iPointerIndex));
+            }
+        }
+
+        return true;
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         Log.d("Game.java", "surfaceCreated()");
         if (gameLoop.getState().equals(Thread.State.TERMINATED)) {
-            SurfaceHolder surfaceHolder = getHolder();
-            surfaceHolder.addCallback(this);
-            gameLoop = new GameLoop(this, surfaceHolder);
+            gameLoop = new GameLoop(this, holder);
         }
         gameLoop.startLoop();
     }
@@ -132,7 +156,8 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
         }
 
         // Draw game panels
-        joystick.draw(canvas);
+        movementJoystick.draw(canvas);
+        directionJoystick.draw(canvas);
         performance.draw(canvas);
 
         // Draw Game over if the player is dead
@@ -149,7 +174,8 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
         }
 
         // Update game state
-        joystick.update();
+        movementJoystick.update();
+        directionJoystick.update();
         player.update();
 
         if(Enemy.readyToSpawn()) {
