@@ -1,8 +1,11 @@
 package com.example.androidstudio2dgamedevelopment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -34,6 +37,7 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
     private int numberOfSpellsToCast = 0;
     private GameOver gameOver;
     private Performance performance;
+    private GameDisplay gameDisplay;
 
     public Game(Context context) {
         super(context);
@@ -52,6 +56,10 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
         // Initialize game objects
         player = new Player(context, joystick, 2*500, 500, 30);
 
+        // Initialize display and center it around the player
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        ((Activity) getContext()).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        gameDisplay = new GameDisplay(displayMetrics.widthPixels, displayMetrics.heightPixels, player);
 
         setFocusable(true);
     }
@@ -121,14 +129,14 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
         super.draw(canvas);
 
         // Draw game objects
-        player.draw(canvas);
+        player.draw(canvas, gameDisplay);
 
         for (Enemy enemy : enemyList) {
-            enemy.draw(canvas);
+            enemy.draw(canvas, gameDisplay);
         }
 
         for (Spell spell : spellList) {
-            spell.draw(canvas);
+            spell.draw(canvas, gameDisplay);
         }
 
         // Draw game panels
@@ -142,7 +150,6 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void update() {
-
         // Stop updating the game if the player is dead
         if (player.getHealthPoint() <= 0) {
             return;
@@ -152,6 +159,7 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
         joystick.update();
         player.update();
 
+        // Spawn enemy
         if(Enemy.readyToSpawn()) {
             enemyList.add(new Enemy(getContext(), player));
         }
@@ -193,6 +201,10 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
                 }
             }
         }
+        
+        // Update gameDisplay so that it's center is set to the new center of the player's 
+        // game coordinates
+        gameDisplay.update();
     }
 
     public void pause() {

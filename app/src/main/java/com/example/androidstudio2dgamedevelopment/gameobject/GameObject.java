@@ -2,6 +2,8 @@ package com.example.androidstudio2dgamedevelopment.gameobject;
 
 import android.graphics.Canvas;
 
+import com.example.androidstudio2dgamedevelopment.GameDisplay;
+
 /**
  * GameObject is an abstract class which is the foundation of all world objects in the game.
  */
@@ -24,7 +26,7 @@ public abstract class GameObject {
     public double getDirectionX() { return directionX; }
     public double getDirectionY() { return directionY; }
 
-    public abstract void draw(Canvas canvas);
+    public abstract void draw(Canvas canvas, GameDisplay gameDisplay);
     public abstract void update();
 
     /**
