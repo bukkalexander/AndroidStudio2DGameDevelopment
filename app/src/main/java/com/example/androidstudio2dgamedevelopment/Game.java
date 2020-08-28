@@ -12,6 +12,8 @@ import android.view.SurfaceView;
 
 import com.example.androidstudio2dgamedevelopment.gameobject.Circle;
 import com.example.androidstudio2dgamedevelopment.gameobject.Enemy;
+import com.example.androidstudio2dgamedevelopment.gameobject.EnemySpell;
+import com.example.androidstudio2dgamedevelopment.gameobject.EnemySpell2;
 import com.example.androidstudio2dgamedevelopment.gameobject.Player;
 import com.example.androidstudio2dgamedevelopment.gameobject.Spell;
 import com.example.androidstudio2dgamedevelopment.gamepanel.GameOver;
@@ -34,6 +36,8 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
     private GameLoop gameLoop;
     private List<Enemy> enemyList = new ArrayList<Enemy>();
     private List<Spell> spellList = new ArrayList<Spell>();
+    private List<EnemySpell> enemySpellList = new ArrayList<>();
+    private List<EnemySpell2> enemySpellList2 = new ArrayList<>();
     private int numberOfSpellsToCast = 0;
     private GameOver gameOver;
     private Performance performance;
@@ -139,6 +143,14 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
             spell.draw(canvas, gameDisplay);
         }
 
+        for (EnemySpell spell : enemySpellList) {
+            spell.draw(canvas, gameDisplay);
+        }
+
+        for (EnemySpell2 spell : enemySpellList2) {
+            spell.draw(canvas, gameDisplay);
+        }
+
         // Draw game panels
         joystick.draw(canvas);
         performance.draw(canvas);
@@ -164,6 +176,19 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
             enemyList.add(new Enemy(getContext(), player));
         }
 
+        // Enemies cast spells
+        Iterator<Enemy> iteratorEnemy0 = enemyList.iterator();
+        while (iteratorEnemy0.hasNext()) {
+            Enemy enemy = iteratorEnemy0.next();
+            if (enemy.readyToCastSpell()) {
+                enemySpellList.add(new EnemySpell(getContext(), enemy));
+            }
+
+            if (enemy.readyToCastSpell2()) {
+                enemySpellList2.add(new EnemySpell2(getContext(), enemy));
+            }
+        }
+
         // Update states of all enemies
         for (Enemy enemy : enemyList) {
             enemy.update();
@@ -175,6 +200,14 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
             numberOfSpellsToCast --;
         }
         for (Spell spell : spellList) {
+            spell.update();
+        }
+
+        for (EnemySpell spell : enemySpellList) {
+            spell.update();
+        }
+
+        for (EnemySpell2 spell : enemySpellList2) {
             spell.update();
         }
 
@@ -200,8 +233,46 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
                     break;
                 }
             }
+
+            Iterator<EnemySpell> iteratorEnemySpell = enemySpellList.iterator();
+            while (iteratorEnemySpell.hasNext()) {
+                Circle spell = iteratorEnemySpell.next();
+                // Deduct players health if it collides with a spell
+                if (Circle.isColliding(spell, player)) {
+                    iteratorEnemySpell.remove();
+                    player.setHealthPoint(player.getHealthPoint() - 1);
+                    break;
+                }
+            }
+
+            Iterator<EnemySpell2> iteratorEnemySpell2 = enemySpellList2.iterator();
+            while (iteratorEnemySpell2.hasNext()) {
+                Circle spell = iteratorEnemySpell2.next();
+                // Deduct players health if it collides with a spell
+                if (Circle.isColliding(spell, player)) {
+                    iteratorEnemySpell2.remove();
+                    player.setHealthPoint(player.getHealthPoint() - 1);
+                    break;
+                }
+            }
+
+
         }
-        
+        /*
+        Iterator<Enemy> iteratorEnemy2 = enemyList.iterator();
+        while (iteratorEnemy2.hasNext()) {
+            Iterator<Spell> iteratorEnemySpell = spellList.iterator();
+            while (iteratorEnemySpell.hasNext()) {
+                Circle spell = iteratorSpell.next();
+                // Deduct players health if it collides with a spell
+                if (Circle.isColliding(spell, player)) {
+                    iteratorSpell.remove();
+                    player.setHealthPoint(player.getHealthPoint() - 1);
+                    break;
+                }
+            }
+        }
+        */
         // Update gameDisplay so that it's center is set to the new center of the player's 
         // game coordinates
         gameDisplay.update();

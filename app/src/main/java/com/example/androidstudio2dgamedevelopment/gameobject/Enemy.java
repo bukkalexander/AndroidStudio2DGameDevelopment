@@ -19,6 +19,13 @@ public class Enemy extends Circle {
     private static final double UPDATES_PER_SPAWN = GameLoop.MAX_UPS/SPAWNS_PER_SECOND;
     private static double updatesUntilNextSpawn = UPDATES_PER_SPAWN;
     private Player player;
+    private int spellCastUpdateCount; // Counts number of update cycles since last casted spell
+    private int spellCastUpdateCount2;
+    private static final double SPELL_CASTS_PER_MINUTE = 20; // Number of spell casts per minute
+    private static final double SPELL_CASTS_PER_MINUTE2 = 10; // Number of spell casts per minute
+    private static final int UPDATES_PER_SPELL_CAST = (int) (GameLoop.MAX_UPS*60.0/SPELL_CASTS_PER_MINUTE);
+    private static final int UPDATES_PER_SPELL_CAST2 = (int) (GameLoop.MAX_UPS*60.0/SPELL_CASTS_PER_MINUTE2);
+
 
     public Enemy(Context context, Player player, double positionX, double positionY, double radius) {
         super(context, ContextCompat.getColor(context, R.color.enemy), positionX, positionY, radius);
@@ -68,8 +75,8 @@ public class Enemy extends Circle {
         double distanceToPlayer = GameObject.getDistanceBetweenObjects(this, player);
 
         // Calculate direction from enemy to player
-        double directionX = distanceToPlayerX/distanceToPlayer;
-        double directionY = distanceToPlayerY/distanceToPlayer;
+        directionX = distanceToPlayerX/distanceToPlayer;
+        directionY = distanceToPlayerY/distanceToPlayer;
 
         // Set velocity in the direction to the player
         if(distanceToPlayer > 0) { // Avoid division by zero
@@ -85,6 +92,29 @@ public class Enemy extends Circle {
         // =========================================================================================
         positionX += velocityX;
         positionY += velocityY;
+    }
+
+    public boolean readyToCastSpell() {
+        boolean isReadyToCastSpell = spellCastUpdateCount > UPDATES_PER_SPELL_CAST;
+        if (isReadyToCastSpell) {
+            spellCastUpdateCount = 0;
+            return true;
+        } else {
+            spellCastUpdateCount++;
+            return false;
+        }
+
+    }
+    public boolean readyToCastSpell2() {
+        boolean isReadyToCastSpell2 = spellCastUpdateCount2 > UPDATES_PER_SPELL_CAST2;
+        if (isReadyToCastSpell2) {
+            spellCastUpdateCount2 = 0;
+            return true;
+        } else {
+            spellCastUpdateCount2++;
+            return false;
+        }
+
     }
 }
 
