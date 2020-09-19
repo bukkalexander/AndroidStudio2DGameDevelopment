@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -17,6 +16,8 @@ import com.example.androidstudio2dgamedevelopment.gameobject.Spell;
 import com.example.androidstudio2dgamedevelopment.gamepanel.GameOver;
 import com.example.androidstudio2dgamedevelopment.gamepanel.Joystick;
 import com.example.androidstudio2dgamedevelopment.gamepanel.Performance;
+import com.example.androidstudio2dgamedevelopment.tilemap.Level;
+import com.example.androidstudio2dgamedevelopment.tilemap.Tilemap;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -38,6 +39,7 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
     private GameOver gameOver;
     private Performance performance;
     private GameDisplay gameDisplay;
+    private Tilemap tilemap;
 
     public Game(Context context) {
         super(context);
@@ -60,6 +62,9 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         ((Activity) getContext()).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         gameDisplay = new GameDisplay(displayMetrics.widthPixels, displayMetrics.heightPixels, player);
+
+        // Initialize map
+        tilemap = new Tilemap(context, Level.LAYOUT1, gameDisplay);
 
         setFocusable(true);
     }
@@ -127,6 +132,9 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
+
+        // Draw map
+        tilemap.draw(canvas, gameDisplay);
 
         // Draw game objects
         player.draw(canvas, gameDisplay);
