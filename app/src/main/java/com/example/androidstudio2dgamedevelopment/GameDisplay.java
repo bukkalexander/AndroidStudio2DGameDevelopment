@@ -1,11 +1,10 @@
 package com.example.androidstudio2dgamedevelopment;
 
 import com.example.androidstudio2dgamedevelopment.gameobject.GameObject;
-import com.example.androidstudio2dgamedevelopment.gameobject.Player;
 
 public class GameDisplay {
-    private final int widthPixels;
-    private final int heightPixels;
+    public final int WIDTH_PIXELS;
+    public final int HEIGHT_PIXELS;
     private final GameObject centerObject;
     private final double displayCenterX;
     private final double displayCenterY;
@@ -15,8 +14,8 @@ public class GameDisplay {
     private double gameCenterY;
 
     public GameDisplay(int widthPixels, int heightPixels, GameObject centerObject) {
-        this.widthPixels = widthPixels;
-        this.heightPixels = heightPixels;
+        this.WIDTH_PIXELS = widthPixels;
+        this.HEIGHT_PIXELS = heightPixels;
         this.centerObject = centerObject;
 
         displayCenterX = widthPixels/2.0;

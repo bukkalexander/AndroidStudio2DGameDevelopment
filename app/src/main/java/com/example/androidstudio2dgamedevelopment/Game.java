@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -17,6 +16,7 @@ import com.example.androidstudio2dgamedevelopment.gameobject.Spell;
 import com.example.androidstudio2dgamedevelopment.gamepanel.GameOver;
 import com.example.androidstudio2dgamedevelopment.gamepanel.Joystick;
 import com.example.androidstudio2dgamedevelopment.gamepanel.Performance;
+import com.example.androidstudio2dgamedevelopment.map.Map;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -38,6 +38,7 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
     private GameOver gameOver;
     private Performance performance;
     private GameDisplay gameDisplay;
+    private Map terrain;
 
     public Game(Context context) {
         super(context);
@@ -47,6 +48,9 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
         surfaceHolder.addCallback(this);
 
         gameLoop = new GameLoop(this, surfaceHolder);
+
+        // Initialize terrain
+        Map terrain = new Map();
 
         // Initialize game panels
         performance = new Performance(context, gameLoop);
@@ -127,6 +131,9 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
+
+        // Draw terrain
+        terrain.draw(canvas, gameDisplay);
 
         // Draw game objects
         player.draw(canvas, gameDisplay);
