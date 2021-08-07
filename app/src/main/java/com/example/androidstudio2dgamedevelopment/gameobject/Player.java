@@ -10,6 +10,7 @@ import com.example.androidstudio2dgamedevelopment.gamepanel.HealthBar;
 import com.example.androidstudio2dgamedevelopment.gamepanel.Joystick;
 import com.example.androidstudio2dgamedevelopment.R;
 import com.example.androidstudio2dgamedevelopment.Utils;
+import com.example.androidstudio2dgamedevelopment.graphics.Animator;
 import com.example.androidstudio2dgamedevelopment.graphics.Sprite;
 
 /**
@@ -23,13 +24,15 @@ public class Player extends Circle {
     private Joystick joystick;
     private HealthBar healthBar;
     private int healthPoints = MAX_HEALTH_POINTS;
-    private Sprite sprite;
+    private Animator animator;
+    private PlayerState playerState;
 
-    public Player(Context context, Joystick joystick, double positionX, double positionY, double radius, Sprite sprite) {
+    public Player(Context context, Joystick joystick, double positionX, double positionY, double radius, Animator animator) {
         super(context, ContextCompat.getColor(context, R.color.player), positionX, positionY, radius);
         this.joystick = joystick;
         this.healthBar = new HealthBar(context, this);
-        this.sprite = sprite;
+        this.animator = animator;
+        this.playerState = new PlayerState(this);
     }
 
     public void update() {
@@ -49,14 +52,17 @@ public class Player extends Circle {
             directionX = velocityX/distance;
             directionY = velocityY/distance;
         }
+
+        // Update player State
+        playerState.update();
     }
 
     public void draw(Canvas canvas, GameDisplay gameDisplay) {
 
-        sprite.draw(
+        animator.draw(
             canvas,
-                (int) gameDisplay.gameToDisplayCoordinatesX(getPositionX()) - sprite.getWidth()/2,
-                (int) gameDisplay.gameToDisplayCoordinatesY(getPositionY()) - sprite.getHeight()/2
+            gameDisplay,
+            this
         );
         healthBar.draw(canvas, gameDisplay);
     }
@@ -69,5 +75,9 @@ public class Player extends Circle {
         // Only allow positive values
         if (healthPoints >= 0)
             this.healthPoints = healthPoints;
+    }
+
+    public PlayerState getPlayerState() {
+        return playerState;
     }
 }
