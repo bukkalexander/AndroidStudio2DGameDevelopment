@@ -3,8 +3,10 @@ package com.example.androidstudio2dgamedevelopment;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -16,8 +18,9 @@ import com.example.androidstudio2dgamedevelopment.gameobject.Spell;
 import com.example.androidstudio2dgamedevelopment.gamepanel.GameOver;
 import com.example.androidstudio2dgamedevelopment.gamepanel.Joystick;
 import com.example.androidstudio2dgamedevelopment.gamepanel.Performance;
-import com.example.androidstudio2dgamedevelopment.tilemap.Level;
-import com.example.androidstudio2dgamedevelopment.tilemap.Tilemap;
+import com.example.androidstudio2dgamedevelopment.graphics.Animator;
+import com.example.androidstudio2dgamedevelopment.graphics.Sprite;
+import com.example.androidstudio2dgamedevelopment.graphics.SpriteSheet;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -39,7 +42,6 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
     private GameOver gameOver;
     private Performance performance;
     private GameDisplay gameDisplay;
-    private Tilemap tilemap;
 
     public Game(Context context) {
         super(context);
@@ -56,15 +58,19 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
         joystick = new Joystick(275, 700, 70, 40);
 
         // Initialize game objects
-        player = new Player(context, joystick, 2*500, 500, 30);
+        SpriteSheet spriteSheet = new SpriteSheet(context);
+
+        Sprite[] spriteArray = new Sprite[3];
+        spriteArray[0] = new Sprite(spriteSheet, new Rect(0*64, 0, 1*64, 64));
+        spriteArray[1] = new Sprite(spriteSheet, new Rect(1*64, 0, 2*64, 64));
+        spriteArray[2] = new Sprite(spriteSheet, new Rect(2*64, 0, 3*64, 64));
+        Animator animator = new Animator(spriteArray);
+        player = new Player(context, joystick, 2*500, 500, 32, animator);
 
         // Initialize display and center it around the player
         DisplayMetrics displayMetrics = new DisplayMetrics();
         ((Activity) getContext()).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         gameDisplay = new GameDisplay(displayMetrics.widthPixels, displayMetrics.heightPixels, player);
-
-        // Initialize map
-        tilemap = new Tilemap(context, Level.LAYOUT1, gameDisplay);
 
         setFocusable(true);
     }
@@ -132,9 +138,6 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
-
-        // Draw map
-        tilemap.draw(canvas, gameDisplay);
 
         // Draw game objects
         player.draw(canvas, gameDisplay);
