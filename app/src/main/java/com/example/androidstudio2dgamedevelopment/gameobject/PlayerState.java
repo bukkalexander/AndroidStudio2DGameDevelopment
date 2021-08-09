@@ -4,15 +4,16 @@ public class PlayerState {
 
     public enum State {
         NOT_MOVING,
-        STARTED_MOVING,
+        STARED_MOVING,
         IS_MOVING
     }
+
     private Player player;
     private State state;
 
     public PlayerState(Player player) {
         this.player = player;
-        state = State.NOT_MOVING;
+        this.state = State.NOT_MOVING;
     }
 
     public State getState() {
@@ -23,13 +24,11 @@ public class PlayerState {
         switch (state) {
             case NOT_MOVING:
                 if (player.velocityX != 0 || player.velocityY != 0)
-                    state = State.STARTED_MOVING;
+                    state = State.STARED_MOVING;
                 break;
-            case STARTED_MOVING:
+            case STARED_MOVING:
                 if (player.velocityX != 0 || player.velocityY != 0)
                     state = State.IS_MOVING;
-                else
-                    state = State.NOT_MOVING;
                 break;
             case IS_MOVING:
                 if (player.velocityX == 0 && player.velocityY == 0)

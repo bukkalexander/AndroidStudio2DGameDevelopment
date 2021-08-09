@@ -3,7 +3,6 @@ package com.example.androidstudio2dgamedevelopment;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Rect;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -19,7 +18,6 @@ import com.example.androidstudio2dgamedevelopment.gamepanel.GameOver;
 import com.example.androidstudio2dgamedevelopment.gamepanel.Joystick;
 import com.example.androidstudio2dgamedevelopment.gamepanel.Performance;
 import com.example.androidstudio2dgamedevelopment.graphics.Animator;
-import com.example.androidstudio2dgamedevelopment.graphics.Sprite;
 import com.example.androidstudio2dgamedevelopment.graphics.SpriteSheet;
 
 import java.util.ArrayList;
@@ -59,12 +57,7 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         // Initialize game objects
         SpriteSheet spriteSheet = new SpriteSheet(context);
-
-        Sprite[] spriteArray = new Sprite[3];
-        spriteArray[0] = new Sprite(spriteSheet, new Rect(0*64, 0, 1*64, 64));
-        spriteArray[1] = new Sprite(spriteSheet, new Rect(1*64, 0, 2*64, 64));
-        spriteArray[2] = new Sprite(spriteSheet, new Rect(2*64, 0, 3*64, 64));
-        Animator animator = new Animator(spriteArray);
+        Animator animator = new Animator(spriteSheet.getPlayerSpriteArray());
         player = new Player(context, joystick, 2*500, 500, 32, animator);
 
         // Initialize display and center it around the player

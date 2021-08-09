@@ -53,17 +53,12 @@ public class Player extends Circle {
             directionY = velocityY/distance;
         }
 
-        // Update player State
         playerState.update();
     }
 
     public void draw(Canvas canvas, GameDisplay gameDisplay) {
+        animator.draw(canvas, gameDisplay, this);
 
-        animator.draw(
-            canvas,
-            gameDisplay,
-            this
-        );
         healthBar.draw(canvas, gameDisplay);
     }
 
