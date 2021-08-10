@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -19,6 +18,7 @@ import com.example.androidstudio2dgamedevelopment.gamepanel.Joystick;
 import com.example.androidstudio2dgamedevelopment.gamepanel.Performance;
 import com.example.androidstudio2dgamedevelopment.graphics.Animator;
 import com.example.androidstudio2dgamedevelopment.graphics.SpriteSheet;
+import com.example.androidstudio2dgamedevelopment.graphics.Tilemap;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -40,6 +40,7 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
     private GameOver gameOver;
     private Performance performance;
     private GameDisplay gameDisplay;
+    private Tilemap tilemap;
 
     public Game(Context context) {
         super(context);
@@ -56,9 +57,17 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
         joystick = new Joystick(275, 700, 70, 40);
 
         // Initialize game objects
-        SpriteSheet spriteSheet = new SpriteSheet(context);
+        SpriteSheet spriteSheet = null;
+        try {
+            spriteSheet = new SpriteSheet(context);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         Animator animator = new Animator(spriteSheet.getPlayerSpriteArray());
         player = new Player(context, joystick, 2*500, 500, 32, animator);
+
+        // Initialize Tilemap
+        tilemap = new Tilemap(spriteSheet);
 
         // Initialize display and center it around the player
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -131,6 +140,9 @@ class Game extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
+
+        // Draw Tilemap
+        tilemap.draw(canvas, gameDisplay);
 
         // Draw game objects
         player.draw(canvas, gameDisplay);
