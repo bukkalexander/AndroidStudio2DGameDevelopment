@@ -1,36 +1,34 @@
 package com.example.androidstudio2dgamedevelopment.graphics;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 
 public class Sprite {
 
     private final SpriteSheet spriteSheet;
-    private final Rect srcRect; // Which area of the sprite sheet bitmap to get the sprite from
-    private Rect dstRect; // Where to draw the sprite on the canvas
+    private final Rect rect;
 
     public Sprite(SpriteSheet spriteSheet, Rect rect) {
         this.spriteSheet = spriteSheet;
-        this.srcRect = rect;
-        this.dstRect = new Rect();
+        this.rect = rect;
     }
 
     public void draw(Canvas canvas, int x, int y) {
-        dstRect.set(x, y, x+getWidth(), y+getHeight());
         canvas.drawBitmap(
             spriteSheet.getBitmap(),
-                srcRect,
-                dstRect,
+                rect,
+                new Rect(x, y, x+getWidth(), y+getHeight()),
                 null
         );
     }
 
     public int getWidth() {
-        return srcRect.width();
+        return rect.width();
     }
 
     public int getHeight() {
-        return srcRect.height();
+        return rect.height();
     }
 
 

@@ -1,21 +1,22 @@
-package com.example.androidstudio2dgamedevelopment.graphics;
+package com.example.androidstudio2dgamedevelopment.map;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 
 import com.example.androidstudio2dgamedevelopment.GameDisplay;
+import com.example.androidstudio2dgamedevelopment.graphics.SpriteSheet;
 
-import static com.example.androidstudio2dgamedevelopment.graphics.MapLayout.NUMBER_OF_COLUMN_TILES;
-import static com.example.androidstudio2dgamedevelopment.graphics.MapLayout.NUMBER_OF_ROW_TILES;
-import static com.example.androidstudio2dgamedevelopment.graphics.MapLayout.TILE_HEIGHT_PIXELS;
-import static com.example.androidstudio2dgamedevelopment.graphics.MapLayout.TILE_WIDTH_PIXELS;
-
+import static com.example.androidstudio2dgamedevelopment.map.MapLayout.NUMBER_OF_COLUMN_TILES;
+import static com.example.androidstudio2dgamedevelopment.map.MapLayout.NUMBER_OF_ROW_TILES;
+import static com.example.androidstudio2dgamedevelopment.map.MapLayout.TILE_HEIGHT_PIXELS;
+import static com.example.androidstudio2dgamedevelopment.map.MapLayout.TILE_WIDTH_PIXELS;
 
 public class Tilemap {
-    private SpriteSheet spriteSheet;
-    private MapLayout mapLayout;
+
+    private final MapLayout mapLayout;
     private Tile[][] tilemap;
+    private SpriteSheet spriteSheet;
     private Bitmap mapBitmap;
 
     public Tilemap(SpriteSheet spriteSheet) {
@@ -30,18 +31,19 @@ public class Tilemap {
         for (int iRow = 0; iRow < NUMBER_OF_ROW_TILES; iRow++) {
             for (int iCol = 0; iCol < NUMBER_OF_COLUMN_TILES; iCol++) {
                 tilemap[iRow][iCol] = Tile.getTile(
-                        layout[iRow][iCol],
-                        spriteSheet,
-                        getRectByMapIndex(iRow, iCol));
+                    layout[iRow][iCol],
+                    spriteSheet,
+                    getRectByIndex(iRow, iCol)
+                );
             }
         }
 
         Bitmap.Config config = Bitmap.Config.ARGB_8888;
         mapBitmap = Bitmap.createBitmap(
-            NUMBER_OF_COLUMN_TILES*TILE_WIDTH_PIXELS,
-            NUMBER_OF_ROW_TILES*TILE_HEIGHT_PIXELS,
-            config
-            );
+                NUMBER_OF_COLUMN_TILES*TILE_WIDTH_PIXELS,
+                NUMBER_OF_ROW_TILES*TILE_HEIGHT_PIXELS,
+                config
+        );
 
         Canvas mapCanvas = new Canvas(mapBitmap);
 
@@ -53,7 +55,7 @@ public class Tilemap {
 
     }
 
-    private Rect getRectByMapIndex(int idxRow, int idxCol) {
+    private Rect getRectByIndex(int idxRow, int idxCol) {
         return new Rect(
                 idxCol*TILE_WIDTH_PIXELS,
                 idxRow*TILE_HEIGHT_PIXELS,
@@ -63,8 +65,11 @@ public class Tilemap {
     }
 
     public void draw(Canvas canvas, GameDisplay gameDisplay) {
-        canvas.drawBitmap(mapBitmap, gameDisplay.getGameRect(), gameDisplay.DISPLAY_RECT, null);
+        canvas.drawBitmap(
+            mapBitmap,
+                gameDisplay.getGameRect(),
+                gameDisplay.DISPLAY_RECT,
+                null
+        );
     }
-
-
 }

@@ -1,5 +1,6 @@
 package com.example.androidstudio2dgamedevelopment;
 
+import android.animation.Animator;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
